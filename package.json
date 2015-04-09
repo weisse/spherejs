@@ -1,0 +1,22 @@
+{
+  "name": "sphere",
+  "version": "0.0.1",
+  "description": "give structure to your javascript projects",
+  "main": "main.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weisse/sphere.git"
+  },
+  "author": "weisse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/weisse/sphere/issues"
+  },
+  "homepage": "https://github.com/weisse/sphere",
+  "dependencies": {
+    "xtra": "0.0.8"
+  }
+}
