@@ -1,7 +1,26 @@
 /**
  * Created by weisse on 06/04/2015.
  */
-module.exports = O.create = function(){
+var x = require("xtra");
+var O = function(){return this.constructor.apply(this,arguments)};
+O.__factoryCounter = 0;
+O.factory = {};
+O.prototype.constructor = function(){
+
+    this.sid = O.__factoryCounter.toString();
+    O.factory[this.sid] = this;
+    O.__factoryCounter++;
+    return this;
+
+};
+O.prototype.destroy = function(){
+
+    delete O.factory[this.sid];
+    return this;
+
+};
+
+O.create = function(){
 
     // check arguments
     if(arguments[0] && !arguments[1] && x.isObject(arguments[0])){
@@ -36,3 +55,10 @@ module.exports = O.create = function(){
     return Class;
 
 };
+O.get = function(idx){
+
+    return O.factory[idx];
+
+};
+
+module.exports = O;
