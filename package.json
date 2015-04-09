@@ -1,7 +1,7 @@
 {
   "name": "spherejs",
-  "version": "0.0.1",
-  "description": "give structure to your javascript projects",
+  "version": "0.0.2",
+  "description": "Give structure to your nodejs projects",
   "main": "main.js",
   "scripts": {
     "test": "mocha"
