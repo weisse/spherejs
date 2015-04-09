@@ -10,7 +10,7 @@ module.exports = O.create(O.EventsManager, {
 
         O.EventsManager.prototype.constructor.apply(this, arguments);
         this.__commands = {};
-        this.__responses = {};
+        this.__answers = {};
 
     },
     command: function(name, fn){
@@ -21,11 +21,11 @@ module.exports = O.create(O.EventsManager, {
         return this;
 
     },
-    response: function(request, fn){
+    answer: function(request, fn){
 
-        if(!x.isUndefined(this.__responses[request])) this.shut(request);
+        if(!x.isUndefined(this.__answers[request])) this.shut(request);
         var task = this.registerTask(fn);
-        this.__responses[request] = task;
+        this.__answers[request] = task;
         return this;
 
     },
@@ -44,14 +44,14 @@ module.exports = O.create(O.EventsManager, {
     },
     shut: function(request){
 
-        this.removeTask(this.__responses[request]);
-        delete this.__responses[request];
+        this.removeTask(this.__answers[request]);
+        delete this.__answers[request];
         return this;
 
     },
     shutAll: function(){
 
-        for(var request in this.__responses) this.shut(request);
+        for(var request in this.__answers) this.shut(request);
         return this;
 
     },
@@ -67,7 +67,7 @@ module.exports = O.create(O.EventsManager, {
 
         var args = x.toArray(x.objectify(arguments));
         var question = args.shift();
-        return this.perform.apply(this, [this.__responses[question], this].concat(args));
+        return this.perform.apply(this, [this.__answers[question], this].concat(args));
 
     }
 

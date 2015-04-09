@@ -707,10 +707,10 @@ describe("Sphere", function(){
 
         });
 
-        it("should instantiate an object containing the properties \"__commands\" and \"__responses\"", function(){
+        it("should instantiate an object containing the properties \"__commands\" and \"__answers\"", function(){
 
             var rm = new O.RelationsManager();
-            assert.equal([false,false].toString(), [x.isUndefined(rm.__commands), x.isUndefined(rm.__responses)].toString());
+            assert.equal([false,false].toString(), [x.isUndefined(rm.__commands), x.isUndefined(rm.__answers)].toString());
 
         });
 
@@ -744,31 +744,31 @@ describe("Sphere", function(){
 
         });
 
-        describe("response()", function(){
+        describe("answer()", function(){
 
-            it("should create a response inside the property \"__responses\" and relative task", function(){
+            it("should create a answer inside the property \"__answers\" and relative task", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(){});
+                rm.answer("myName", function(){});
 
-                assert.equal([false,false].toString(), [x.isUndefined(rm.__responses["myName"]), x.isUndefined(rm.__tasks[0])].toString());
+                assert.equal([false,false].toString(), [x.isUndefined(rm.__answers["myName"]), x.isUndefined(rm.__tasks[0])].toString());
 
             });
 
-            it("should overwrite, if it exists, the task registered with the same name as the one passed as an argument and should create a task for this new response", function(){
+            it("should overwrite, if it exists, the task registered with the same name as the one passed as an argument and should create a task for this new answer", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(){});
-                rm.response("myName", function(){});
+                rm.answer("myName", function(){});
+                rm.answer("myName", function(){});
 
-                assert.equal([false,true,false].toString(), [x.isUndefined(rm.__responses["myName"]), x.isUndefined(rm.__tasks[0]),x.isUndefined(rm.__tasks[1])].toString());
+                assert.equal([false,true,false].toString(), [x.isUndefined(rm.__answers["myName"]), x.isUndefined(rm.__tasks[0]),x.isUndefined(rm.__tasks[1])].toString());
 
             });
 
             it("should return this to make chaining possible", function(){
 
                 var rm = new O.RelationsManager();
-                assert.equal(rm, rm.response("doIt", function(){}));
+                assert.equal(rm, rm.answer("doIt", function(){}));
 
             });
 
@@ -821,20 +821,20 @@ describe("Sphere", function(){
 
         describe("shut()", function(){
 
-            it("should delete the specified response and its task", function(){
+            it("should delete the specified answer and its task", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(){});
+                rm.answer("myName", function(){});
                 rm.shut("myName");
 
-                assert.equal([true,true].toString(), [x.isUndefined(rm.__responses["myName"]), x.isUndefined(rm.__tasks[0])].toString());
+                assert.equal([true,true].toString(), [x.isUndefined(rm.__answers["myName"]), x.isUndefined(rm.__tasks[0])].toString());
 
             });
 
             it("should return this to make chaining possible", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(){});
+                rm.answer("myName", function(){});
                 assert.equal(rm, rm.shut("myName"));
 
             });
@@ -843,15 +843,15 @@ describe("Sphere", function(){
 
         describe("shutAll()", function(){
 
-            it("should delete all responses their task", function(){
+            it("should delete all answers their task", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("first", function(){});
-                rm.response("second", function(){});
-                rm.response("third", function(){});
+                rm.answer("first", function(){});
+                rm.answer("second", function(){});
+                rm.answer("third", function(){});
                 rm.shutAll();
 
-                assert.equal([0,0].toString(), [x.size(rm.__responses), x.size(rm.__tasks)].toString());
+                assert.equal([0,0].toString(), [x.size(rm.__answers), x.size(rm.__tasks)].toString());
 
             });
 
@@ -894,13 +894,13 @@ describe("Sphere", function(){
 
         describe("ask()", function(){
 
-            it("should run the specified response passing all arguments", function(){
+            it("should run the specified answer passing all arguments", function(){
 
                 var count1 = 1;
                 var count2 = 2;
                 var count3 = 3;
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(c1, c2, c3){
+                rm.answer("myName", function(c1, c2, c3){
 
                     assert.equal([1,2,3].toString(), [count1,count2,count3].toString());
 
@@ -913,7 +913,7 @@ describe("Sphere", function(){
             it("should return the value you asked for", function(){
 
                 var rm = new O.RelationsManager();
-                rm.response("myName", function(){return "Weisse"});
+                rm.answer("myName", function(){return "Weisse"});
                 assert.equal("Weisse", rm.ask("myName"));
 
             });
