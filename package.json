@@ -1,5 +1,5 @@
 {
-  "name": "sphere",
+  "name": "spherejs",
   "version": "0.0.1",
   "description": "give structure to your javascript projects",
   "main": "main.js",
@@ -8,15 +8,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/weisse/sphere.git"
+    "url": "https://github.com/weisse/spherejs.git"
   },
   "author": "weisse",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/weisse/sphere/issues"
+    "url": "https://github.com/weisse/spherejs/issues"
   },
-  "homepage": "https://github.com/weisse/sphere",
+  "homepage": "https://github.com/weisse/spherejs",
   "dependencies": {
     "xtra": "0.0.8"
+  },
+  "devDependencies": {
+    "mocha": "^2.2.4"
   }
 }
