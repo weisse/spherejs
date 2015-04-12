@@ -15,24 +15,36 @@ module.exports = O.create({
     },
     __tasksCounter: 0,
     __tasks: {},
-    registerTask: function(task){
+    registerTask: function(){
 
-        if(x.isFunction(task)){
+        var idx;
+        var fn;
 
-            this.__tasks[this.__tasksCounter] = task;
-            this.__tasksCounter++;
-            return this.__tasksCounter - 1;
+        if(x.isFunction(arguments[0])){
+
+            idx = this.__tasksCounter++;
+            fn = arguments[0];
+
+        }else if(x.isString(arguments[0]) && x.isFunction(arguments[1])){
+
+            idx = arguments[0];
+            fn = arguments[1];
 
         }else{
 
-            throw(new Error("Task must be a function."));
+            throw(new Error("Invalid arguments."));
 
         }
+
+        this.__tasks[idx] = fn;
+        return idx;
 
     },
     removeTask: function(idx){
 
-        return delete this.__tasks[idx];
+        var fn = this.__tasks[idx];
+        delete this.__tasks[idx];
+        return fn;
 
     },
     perform: function(){

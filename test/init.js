@@ -142,30 +142,44 @@ describe("Sphere", function(){
 
     describe("TaskManager", function(){
 
-        var TaskManager = new O.TaskManager();
         var task = function(){console.log("doIt")};
 
         it("should instantiate an object containing the property \"__task\"", function(){
 
-            assert.equal(true, x.isObject(TaskManager.__tasks));
+            var tm = new O.TaskManager();
+            assert.equal(true, x.isObject(tm.__tasks));
 
         });
 
         describe("registerTask()", function(){
 
-            it("should throw an error when the task is not a function", function(){
+            it("should throw an error when the arguments are not valid", function(){
+
+                var tm = new O.TaskManager();
 
                 try{
 
-                    TaskManager.registerTask(123);
+                    tm.registerTask(123);
 
-                }catch(e){
+                }catch(e1){
 
-                    var err = e;
+                    var err1 = e1;
 
                 }finally{
 
-                    assert(true, err instanceof Error);
+                    try{
+
+                        tm.registerTask("name", 123);
+
+                    }catch(e2){
+
+                        var err2 = e2;
+
+                    }finally{
+
+                        assert.equal([true,true].toString(), [err1 instanceof Error, err2 instanceof Error]);
+
+                    }
 
                 }
 
@@ -173,8 +187,27 @@ describe("Sphere", function(){
 
             it("should record a task inside the property \"__task\" contained in the object instantiated", function(){
 
-                TaskManager.registerTask(task);
-                assert.equal(true, TaskManager.__tasks[0] === task);
+                var tm = new O.TaskManager();
+                tm.registerTask(task);
+                assert.equal(true, tm.__tasks[0] === task);
+
+            });
+
+            it("should increment the counter if a name was not specified", function(){
+
+                var tm = new O.TaskManager();
+                var counter = tm.__tasksCounter;
+                tm.registerTask(function(){});
+                assert.equal(true, counter == tm.__tasksCounter - 1);
+
+            });
+
+            it("should not increment the counter if a name was specified", function(){
+
+                var tm = new O.TaskManager();
+                var counter = tm.__tasksCounter;
+                tm.registerTask("test", function(){});
+                assert.equal(true, counter == tm.__tasksCounter);
 
             });
 
@@ -182,39 +215,29 @@ describe("Sphere", function(){
 
         describe("removeTask()", function(){
 
-            it("should throw an error when it does not find a task corresponding to the passed index", function(){
+            it("should return \"undefined\" when it does not find a task corresponding to the passed index", function(){
 
-                try{
-
-                    TaskManager.removeTask("string");
-
-                }catch(e){
-
-                    var err = e;
-
-                }finally{
-
-                    assert(true, err instanceof Error);
-
-                }
+                var tm = new O.TaskManager();
+                console.log(tm.removeTask("string"));
+                assert.equal(true, x.isUndefined(tm.removeTask("string")));
 
             });
 
             it("should delete the pointer on that task", function(){
 
-                TaskManager.removeTask(0);
-                assert.equal(true, x.isUndefined(TaskManager.__tasks[0]));
+                var tm = new O.TaskManager();
+                tm.registerTask(function(){});
+                tm.removeTask(0);
+                assert.equal(true, x.isUndefined(tm.__tasks[0]));
 
             });
 
-            it("should not touch the index position of other tasks", function(){
+            it("should return the deleted task", function(){
 
-                TaskManager.registerTask(function(){return "done"});
-                TaskManager.registerTask(function(){});
-                TaskManager.registerTask(function(){return arguments});
-                TaskManager.removeTask(2);
-
-                assert.equal([true,true].toString(), [!x.isFalsy(TaskManager.__tasks[1]), !x.isFalsy(TaskManager.__tasks[3])].toString());
+                var tm = new O.TaskManager();
+                var fn = function(){};
+                tm.registerTask(fn);
+                assert.equal(fn, tm.removeTask(0));
 
             });
 
@@ -224,9 +247,11 @@ describe("Sphere", function(){
 
             it("should throw an error when the task is not found", function(){
 
+                var tm = new O.TaskManager();
+
                 try{
 
-                    TaskManager.perform(0);
+                    tm.perform(0);
 
                 }catch(e){
 
@@ -242,9 +267,11 @@ describe("Sphere", function(){
 
             it("should throw an error when the index past is formally incorrect", function(){
 
+                var tm = new O.TaskManager();
+
                 try{
 
-                    TaskManager.perform("idx");
+                    tm.perform(/regexp/);
 
                 }catch(e){
 
@@ -260,13 +287,17 @@ describe("Sphere", function(){
 
             it("should perform a registered task", function(){
 
-                assert.equal("done", TaskManager.perform(1));
+                var tm = new O.TaskManager();
+                tm.registerTask(function(){return "done"});
+                assert.equal("done", tm.perform(0));
 
             });
 
             it("should perform the task specified in the index passed as an argument", function(){
 
-                assert.equal(x.toArray(x.objectify((function(){return arguments}(["one","two","three"])))).toString(), x.toArray(x.objectify(TaskManager.perform(3,this,"one","two","three"))).toString());
+                var tm = new O.TaskManager();
+                tm.registerTask(function(){return arguments});
+                assert.equal(x.toArray(x.objectify((function(){return arguments}(["one","two","three"])))).toString(), x.toArray(x.objectify(tm.perform(0,this,"one","two","three"))).toString());
 
             });
 
@@ -276,8 +307,12 @@ describe("Sphere", function(){
 
             it("should remove all tasks of the instance", function(){
 
-                TaskManager.destroy();
-                assert.equal(0, x.size(TaskManager.__tasks));
+                var tm = new O.TaskManager();
+                tm.registerTask("test", function(){});
+                tm.registerTask(function(){});
+                tm.registerTask(function(){});
+                tm.destroy();
+                assert.equal(0, x.size(tm.__tasks));
 
             }) ;
 
