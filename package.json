@@ -1,6 +1,6 @@
 {
   "name": "spherejs",
-  "version": "0.0.333",
+  "version": "0.0.4",
   "description": "Give structure to your nodejs projects",
   "main": "main.js",
   "scripts": {
