@@ -7,11 +7,48 @@ O.TaskManager = require("./TaskManager");
 
 module.exports = O.create(O.TaskManager, {
 
-    constructor: function(){
+    constructor: function(options){
 
         O.TaskManager.prototype.constructor.apply(this, arguments);
         this.__handlers = {};
         this.__listeners = {};
+
+        if(options){
+
+            if(options.handlers){
+
+                for(var name in options.handlers){
+
+                    if(x.isFunction(options.handlers[name])){
+
+                        this.on(name, options.handlers[name]);
+
+                    }else if(x.isObject(options.handlers[name])){
+
+                        this.on(name, options.handlers[name].callback, options.handlers[name].times);
+
+                    }
+
+                }
+
+            }
+
+            if(options.listeners){
+
+                for(var name in options.listeners){
+
+                    if(x.isObject(options.listeners[name])){
+
+                        this.listenTo(options.listeners[name].observed, name, options.listeners[name].callback, options.listeners[name].times);
+
+                    }
+
+                }
+
+            }
+
+        }
+
         return this;
 
     },
@@ -40,15 +77,19 @@ module.exports = O.create(O.TaskManager, {
         var taskPointer = this.registerTask(fn);
         var handler = {event:event, task:taskPointer, times:times};
         if(observer && listener) handler.observer = observer.sid, handler.listener = listener;
-        this.__handlers[this.__handlersCounter] = handler;
-        return this.__handlersCounter++;
+        var thisPointer = this.__handlersCounter.toString();
+        this.__handlers[thisPointer] = handler;
+        this.__handlersCounter++;
+        return thisPointer;
 
     },
     registerListener: function(evObj, event, fn, times){
 
-        var handler = evObj.registerHandler(event, fn, times, this, this.__listenersCounter);
-        this.__listeners[this.__listenersCounter] = {event:event, observed:evObj.sid, handler:handler};
-        return this.__listenersCounter++;
+        var handlerPointer = evObj.registerHandler(event, fn, times, this, this.__listenersCounter.toString());
+        var thisPointer = this.__listenersCounter.toString();
+        this.__listeners[thisPointer] = {event:event, observed:evObj.sid, handler:handlerPointer};
+        this.__listenersCounter++;
+        return thisPointer;
 
     },
     removeHandler: function(idx){

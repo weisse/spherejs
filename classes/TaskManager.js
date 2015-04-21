@@ -6,10 +6,25 @@ var O = require("../sphere");
 
 module.exports = O.create({
 
-    constructor: function(){
+    constructor: function(options){
 
         O.prototype.constructor.apply(this, arguments);
         this.__tasks = {};
+
+        if(options){
+
+            if(options.tasks){
+
+                for(var name in options.tasks){
+
+                    this.registerTask(name, options.tasks[name]);
+
+                }
+
+            }
+
+        }
+
         return this;
 
     },
@@ -22,8 +37,9 @@ module.exports = O.create({
 
         if(x.isFunction(arguments[0])){
 
-            idx = this.__tasksCounter++;
+            idx = this.__tasksCounter.toString();
             fn = arguments[0];
+            this.__tasksCounter++;
 
         }else if(x.isString(arguments[0]) && x.isFunction(arguments[1])){
 

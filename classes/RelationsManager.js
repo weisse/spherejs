@@ -6,26 +6,52 @@ var x = require("xtra");
 
 module.exports = O.create(O.EventsManager, {
 
-    constructor: function(){
+    constructor: function(options){
 
         O.EventsManager.prototype.constructor.apply(this, arguments);
         this.__commands = {};
         this.__answers = {};
 
+        if(options){
+
+            if(options.commands){
+
+                for(var name in options.commands){
+
+                    this.command(name, options.commands[name]);
+
+                }
+
+            }
+
+            if(options.answers){
+
+                for(var name in options.answers){
+
+                    this.answer(name, options.answers[name]);
+
+                }
+
+            }
+
+        }
+
+        return this;
+
     },
     command: function(name, fn){
 
         if(!x.isUndefined(this.__commands[name])) this.dismiss(name);
-        var task = this.registerTask(fn);
-        this.__commands[name] = task;
+        var taskPointer = this.registerTask(fn);
+        this.__commands[name] = taskPointer;
         return this;
 
     },
     answer: function(request, fn){
 
         if(!x.isUndefined(this.__answers[request])) this.shut(request);
-        var task = this.registerTask(fn);
-        this.__answers[request] = task;
+        var taskPointer = this.registerTask(fn);
+        this.__answers[request] = taskPointer;
         return this;
 
     },

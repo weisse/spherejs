@@ -151,6 +151,28 @@ describe("Sphere", function(){
 
         });
 
+        it("should register the tasks passed to the constructor", function(){
+
+            var tasks = {
+
+                "first": function(){return 1;},
+                "second": function(){return 2;},
+                "third": function(){return 3;}
+
+            }
+            var tm = new O.TaskManager({
+
+                tasks:tasks
+
+            });
+
+            var first = tm.__tasks.first.toString() == tasks.first.toString();
+            var second = tm.__tasks.second.toString() == tasks.second.toString();
+            var third = tm.__tasks.third.toString() == tasks.third.toString();
+            assert.equal([first,second,third].toString(), [true,true,true].toString());
+
+        });
+
         describe("registerTask()", function(){
 
             it("should throw an error when the arguments are not valid", function(){
@@ -218,7 +240,6 @@ describe("Sphere", function(){
             it("should return \"undefined\" when it does not find a task corresponding to the passed index", function(){
 
                 var tm = new O.TaskManager();
-                console.log(tm.removeTask("string"));
                 assert.equal(true, x.isUndefined(tm.removeTask("string")));
 
             });
@@ -323,6 +344,60 @@ describe("Sphere", function(){
     describe("EventsManager", function(){
 
         var em = new O.EventsManager();
+        var findHandler = function(em, name, fn){
+
+            var found = null;
+
+            for(var idx in em.__handlers){
+
+                var handler = em.__handlers[idx];
+
+                if(
+
+                    handler.event == name &&
+                    !x.isUndefined(em.__tasks[handler.task]) &&
+                    em.__tasks[handler.task].toString() == fn.toString()
+
+                ){
+
+                    found = handler;
+                    break;
+
+                }
+
+            }
+
+            return found;
+
+        }
+        var findListener = function(em, ob, name, fn){
+
+            var found = null
+
+            for(var idx in em.__listeners){
+
+                var listener = em.__listeners[idx];
+
+                if(
+
+                    listener.event == name &&
+                    listener.observed == ob.sid &&
+                    !x.isUndefined(ob.__handlers[listener.handler]) &&
+                    !x.isUndefined(ob.__tasks[ob.__handlers[listener.handler].task]) &&
+                    ob.__tasks[ob.__handlers[listener.handler].task].toString() == fn.toString()
+
+                ){
+
+                    found = listener;
+                    break;
+
+                }
+
+            }
+
+            return found;
+
+        }
 
         it("should instantiate an object instance of TaskManager", function(){
 
@@ -342,6 +417,69 @@ describe("Sphere", function(){
 
         });
 
+        it("should register the handlers passed to the constructor", function(){
+
+            var handlers = {
+
+                "first": function(){return 1;},
+                "second": function(){return 2;},
+                "third": function(){return 3;}
+
+            };
+
+            var em = new O.EventsManager({
+
+                handlers:handlers
+
+            });
+
+            var first = findHandler(em, "first", handlers.first);
+            var second = findHandler(em, "second", handlers.second);
+            var third = findHandler(em, "third", handlers.third);
+
+            assert.equal([true,true,true].toString(), [!x.isNull(first),!x.isNull(second),!x.isNull(third)].toString());
+
+        });
+
+        it("should register the handler passed to the constructor in the form of objects with callback and times attributes", function(){
+
+            var handler = {callback:function(){return "callback"}, times:8};
+            var em = new O.EventsManager({
+
+                handlers: {"callback":handler}
+
+            });
+
+            assert.equal(8, findHandler(em, "callback", handler.callback).times);
+
+        });
+
+        it("should register the listener passed to the constructor", function(){
+
+            var ob = new O.EventsManager();
+
+            var listeners = {
+
+                "first": {observed:ob, callback:function(){return 1;}},
+                "second": {observed:ob, callback:function(){return 2;}},
+                "third": {observed:ob, callback:function(){return 3;}, times: 5},
+
+            };
+
+            var em = new O.EventsManager({
+
+                listeners:listeners
+
+            });
+
+            var first = findListener(em, ob, "first", listeners.first.callback);
+            var second = findListener(em, ob, "second", listeners.second.callback);
+            var third = findListener(em, ob, "third", listeners.third.callback);
+
+            assert.equal([true,true,true].toString(), [!x.isNull(first),!x.isNull(second),!x.isNull(third)].toString());
+
+        });
+
         describe("on()", function(){
 
             var em = new O.EventsManager();
@@ -350,7 +488,8 @@ describe("Sphere", function(){
             it("should create an event handler inside the property \"__handlers\"", function(){
 
                 em.on("first", fn);
-                assert.equal(false, x.isUndefined(em.__handlers[0]));
+                var result = findHandler(em, "first", fn);
+                assert.equal(false, x.isUndefined(result));
 
             });
 
@@ -369,7 +508,8 @@ describe("Sphere", function(){
             it("should set the number of times that the handler can be performed", function(){
 
                 em.on("second", fn, 3);
-                assert.equal(3, em.__handlers[1].times);
+                handler = findHandler(em, "second", fn);
+                assert.equal(3, handler.times);
 
             });
 
@@ -746,6 +886,52 @@ describe("Sphere", function(){
 
             var rm = new O.RelationsManager();
             assert.equal([false,false].toString(), [x.isUndefined(rm.__commands), x.isUndefined(rm.__answers)].toString());
+
+        });
+
+        it("should register the commands passed to the constructor", function(){
+
+            var commands = {
+
+                "first": function(){return "first"},
+                "second": function(){return "second"},
+                "third": function(){return "third"}
+
+            };
+            var rm = new O.RelationsManager({
+
+                commands:commands
+
+            });
+
+            var first = rm.__tasks[rm.__commands.first].toString() === commands.first.toString();
+            var second = rm.__tasks[rm.__commands.second].toString() === commands.second.toString();
+            var third = rm.__tasks[rm.__commands.third].toString() === commands.third.toString();
+
+            assert.equal([true,true,true].toString(), [first,second,third].toString());
+
+        });
+
+        it("should register the answers passed to the constructor", function(){
+
+            var answers = {
+
+                "first": function(){return "first"},
+                "second": function(){return "second"},
+                "third": function(){return "third"}
+
+            };
+            var rm = new O.RelationsManager({
+
+                answers:answers
+
+            });
+
+            var first = rm.__tasks[rm.__answers.first].toString() === answers.first.toString();
+            var second = rm.__tasks[rm.__answers.second].toString() === answers.second.toString();
+            var third = rm.__tasks[rm.__answers.third].toString() === answers.third.toString();
+
+            assert.equal([true,true,true].toString(), [first,second,third].toString());
 
         });
 
